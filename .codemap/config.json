@@ -1,0 +1,23 @@
+{
+  "only": ["ts", "json", "md", "yml", "yaml"],
+  "exclude": ["dist", "coverage", "node_modules"],
+  "depth": 4,
+  "routing": {
+    "subsystems": [
+      {
+        "name": "store-state-and-ssr",
+        "paths": ["src/store.ts", "src/registry.ts", "src/ssr.ts", "tests"],
+        "keywords": ["defineStore", "resolveRegistry", "serializeStores", "hydrateStores"],
+        "docs": ["README.md"],
+        "note": "Codemap cannot follow the request-scope boundary from @aihu/context into the store registry, or the serialized state channel from server snapshots into later client store instantiation, because those contracts cross package and runtime boundaries."
+      },
+      {
+        "name": "published-package-boundary",
+        "paths": ["package.json", ".github/workflows", "scripts/check-pack.ts"],
+        "keywords": ["@aihu/context", "@aihu/signals", "NPM_TOKEN", "provenance"],
+        "docs": ["README.md"],
+        "note": "Codemap cannot resolve whether package metadata and release checks describe an installable tarball, so the export and dependency contract is verified by the pack check and release workflow."
+      }
+    ]
+  }
+}

@@ -1,15 +1,21 @@
 # @aihu/store
 
+## 0.1.3
+
+### Patch Changes
+
+- Extracted `@aihu/store` into its own repository and replaced workspace-only dependency metadata with published semver ranges.
+
 ## 0.1.2
 
 ### Patch Changes
 
-- Updated dependencies [[`ad6921a`](https://github.com/fellwork/aihu/commit/ad6921a018ef4a479f6540278e549aa9a8cab387)]:
+- Updated dependencies [[`ad6921a`](https://github.com/aihu-project/aihu/commit/ad6921a018ef4a479f6540278e549aa9a8cab387)]:
   - @aihu/signals@0.5.0
 
 ## 0.1.1
 
 ### Patch Changes
 
-- Updated dependencies [[`18e5f6d`](https://github.com/fellwork/aihu/commit/18e5f6dda93772877690e88e8c217dcdcf4bddc2), [`ea8d2eb`](https://github.com/fellwork/aihu/commit/ea8d2ebb91c28132f399a708e2bd88877072d1db)]:
+- Updated dependencies [[`18e5f6d`](https://github.com/aihu-project/aihu/commit/18e5f6dda93772877690e88e8c217dcdcf4bddc2), [`ea8d2eb`](https://github.com/aihu-project/aihu/commit/ea8d2ebb91c28132f399a708e2bd88877072d1db)]:
   - @aihu/signals@0.4.0

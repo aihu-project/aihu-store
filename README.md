@@ -4,9 +4,7 @@
 
 Pinia-style global stores on aihu signals — defineStore, SSR-safe per-request instances, registry-based serialize/hydrate, plugins.
 
-Held-private workspace package. Not yet published to npm.
-
-> **Status:** Held private — not yet published to npm. See [v1.1 roadmap](../../docs/roadmap/SUMMARY.md) for ratification gating (e.g. RFC #56 live-binding for `@aihu/plugin` enforcement).
+Optional state management for aihu applications. The package is framework-agnostic at the component boundary and can be adopted independently of `@aihu/app`.
 
 <!-- BEGIN_HANDWRITTEN: prose -->
 ## defineStore
@@ -107,7 +105,7 @@ npm install @aihu/store
 bun add @aihu/store
 ```
 
-<sub><i>Auto-generated against `@aihu/store@0.1.2`.</i></sub>
+<sub><i>Auto-generated against `@aihu/store@0.1.3`.</i></sub>
 
 <!-- END_AUTOGEN: install -->
 
@@ -124,7 +122,7 @@ bun add @aihu/store
 | **Published files** | 3 entries |
 | **License** | MIT |
 
-<sub><i>Auto-generated against `@aihu/store@0.1.2`.</i></sub>
+<sub><i>Auto-generated against `@aihu/store@0.1.3`.</i></sub>
 
 <!-- END_AUTOGEN: stats -->
 
@@ -137,7 +135,7 @@ bun add @aihu/store
 |---|---|---|
 | `.` | `./dist/index.js` | `—` |
 
-<sub><i>Auto-generated against `@aihu/store@0.1.2`.</i></sub>
+<sub><i>Auto-generated against `@aihu/store@0.1.3`.</i></sub>
 
 <!-- END_AUTOGEN: exports -->
 
@@ -148,10 +146,10 @@ bun add @aihu/store
 
 **Dependencies:**
 
-- `@aihu/context` — `workspace:*`
+- `@aihu/context` — `^0.2.0`
 - `@aihu/signals` — `^0.5.1`
 
-<sub><i>Auto-generated against `@aihu/store@0.1.2`.</i></sub>
+<sub><i>Auto-generated against `@aihu/store@0.1.3`.</i></sub>
 
 <!-- END_AUTOGEN: deps -->
 
@@ -160,11 +158,11 @@ bun add @aihu/store
 <!-- BEGIN_AUTOGEN: see-also -->
 <!-- regenerate: bun scripts/sync-readme.ts (also runs in pre-commit + CI) -->
 
-- [@aihu/signals](https://github.com/aihu-project/aihu-dom)
-- [@aihu/context](../context)
-- [Aihu framework root](../../README.md)
+- [@aihu/signals](https://github.com/aihu-project/aihu-signals)
+- [@aihu/context](https://github.com/aihu-project/aihu/tree/main/packages/context)
+- [Aihu framework](https://aihu.dev)
 
-<sub><i>Auto-generated against `@aihu/store@0.1.2`.</i></sub>
+<sub><i>Auto-generated against `@aihu/store@0.1.3`.</i></sub>
 
 <!-- END_AUTOGEN: see-also -->
 
@@ -173,8 +171,8 @@ bun add @aihu/store
 <!-- BEGIN_AUTOGEN: license -->
 <!-- regenerate: bun scripts/sync-readme.ts (also runs in pre-commit + CI) -->
 
-MIT — see [LICENSE](../../LICENSE).
+MIT — see [LICENSE](./LICENSE).
 
-<sub><i>Auto-generated against `@aihu/store@0.1.2`.</i></sub>
+<sub><i>Auto-generated against `@aihu/store@0.1.3`.</i></sub>
 
 <!-- END_AUTOGEN: license -->
