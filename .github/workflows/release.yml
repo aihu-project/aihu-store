@@ -1,0 +1,46 @@
+name: Release store
+
+on:
+  push:
+    tags:
+      - store-v*
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: store-release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+      - run: bun install --frozen-lockfile
+      - run: bun run check:ci
+      - name: Validate release tag
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: test "$RELEASE_TAG" = "store-v$(node -p "require('./package.json').version")"
+      - name: Publish package
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          test -n "$NPM_TOKEN"
+          PACKAGE_VERSION="$(node -p "require('./package.json').version")"
+          if npm view "@aihu/store@$PACKAGE_VERSION" version --registry=https://registry.npmjs.org >/dev/null 2>&1; then
+            echo "@aihu/store@$PACKAGE_VERSION is already published; nothing to do."
+            exit 0
+          fi
+          npm publish --access public --provenance

@@ -1,5 +1,11 @@
 # @aihu/store
 
+## 0.1.3
+
+### Patch Changes
+
+- Extracted `@aihu/store` into its own repository and replaced workspace-only dependency metadata with published semver ranges.
+
 ## 0.1.2
 
 ### Patch Changes
