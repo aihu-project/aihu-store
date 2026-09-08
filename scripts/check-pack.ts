@@ -1,4 +1,4 @@
-import { mkdtemp, rm, writeFile } from 'node:fs/promises'
+import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { $ } from 'bun'
@@ -6,6 +6,16 @@ import { $ } from 'bun'
 const staging = await mkdtemp(join(tmpdir(), 'aihu-store-pack-'))
 
 try {
+  const source = JSON.parse(await readFile('package.json', 'utf8')) as {
+    name: string
+    version: string
+    files?: string[]
+    exports?: unknown
+    dependencies?: Record<string, string>
+    devDependencies?: Record<string, string>
+    peerDependencies?: Record<string, string>
+    optionalDependencies?: Record<string, string>
+  }
   await $`bun run build`
   const archiveOutput = await $`npm pack --json --ignore-scripts`.text()
   const [entry] = JSON.parse(archiveOutput) as Array<{
@@ -17,26 +27,60 @@ try {
   const archivePath = join(staging, entry.filename)
   await $`mv ${entry.filename} ${archivePath}`
   const files = new Set(entry.files.map((file) => file.path))
-  for (const expected of ['dist/index.js', 'dist/index.d.ts', 'README.md', 'LICENSE']) {
-    if (!files.has(expected)) throw new Error(`package archive is missing ${expected}`)
+  const requiredFiles = source.files ?? []
+  for (const expected of requiredFiles) {
+    const present = expected.endsWith('/')
+      ? [...files].some((file) => file.startsWith(expected))
+      : files.has(expected) || [...files].some((file) => file.startsWith(`${expected}/`))
+    if (!present) throw new Error(`package archive is missing required file pattern ${expected}`)
+  }
+
+  function exportTargets(value: unknown): string[] {
+    if (typeof value === 'string') return [value]
+    if (!value || typeof value !== 'object') return []
+    return Object.values(value).flatMap(exportTargets)
+  }
+  for (const target of exportTargets(source.exports)) {
+    const path = target.replace(/^\.\//, '')
+    if (path.includes('*')) continue
+    if (!files.has(path)) throw new Error(`package archive is missing export target ${target}`)
   }
 
   const packed = JSON.parse(await $`tar -xOf ${archivePath} package/package.json`.text()) as {
     name?: string
     version?: string
     dependencies?: Record<string, string>
+    devDependencies?: Record<string, string>
+    peerDependencies?: Record<string, string>
+    optionalDependencies?: Record<string, string>
   }
-  if (packed.name !== '@aihu/store') throw new Error(`unexpected package name: ${packed.name}`)
-  if (!packed.version || !/^0\.1\.3$/.test(packed.version)) {
-    throw new Error(`unexpected package version: ${packed.version}`)
+  if (packed.name !== source.name) throw new Error(`unexpected package name: ${packed.name}`)
+  if (packed.version !== source.version) {
+    throw new Error(`packed version ${packed.version} does not match source ${source.version}`)
   }
-  for (const [name, range] of Object.entries(packed.dependencies ?? {})) {
-    if (range.startsWith('workspace:')) {
-      throw new Error(`workspace dependency leaked into package: ${name}@${range}`)
+  const sourceDeps = source.dependencies ?? {}
+  const packedDeps = packed.dependencies ?? {}
+  if (JSON.stringify(packedDeps) !== JSON.stringify(sourceDeps)) {
+    throw new Error(
+      `packed dependencies do not match source: ${JSON.stringify({ source: sourceDeps, packed: packedDeps })}`,
+    )
+  }
+  const dependencySections = [
+    source.dependencies,
+    source.devDependencies,
+    source.peerDependencies,
+    source.optionalDependencies,
+    packed.dependencies,
+    packed.devDependencies,
+    packed.peerDependencies,
+    packed.optionalDependencies,
+  ]
+  for (const section of dependencySections) {
+    for (const [name, range] of Object.entries(section ?? {})) {
+      if (range.startsWith('workspace:')) {
+        throw new Error(`workspace dependency leaked into package metadata: ${name}@${range}`)
+      }
     }
-  }
-  if (packed.dependencies?.['@aihu/context'] !== '^0.2.0') {
-    throw new Error('package must consume the published @aihu/context ^0.2.0 range')
   }
 
   const consumer = join(staging, 'consumer')
