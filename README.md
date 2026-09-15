@@ -116,7 +116,7 @@ bun add @aihu/store
 
 | | |
 |---|---|
-| **Version** | `0.1.2` |
+| **Version** | `0.1.3` |
 | **Tier** | G — State — Pinia-style global stores on aihu signals (SSR-safe per-request) |
 | **Bundle size** | 1.81 kB (gz) — limit 2.5 KB |
 | **Published files** | 3 entries |
