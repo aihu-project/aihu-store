@@ -25,26 +25,26 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          registry-url: https://registry.npmjs.org
+      # npm trusted publishing (OIDC) needs npm 11.5.1 or newer; no npm token is used.
+      - name: Pin npm for trusted publishing
+        run: npm install --global npm@11.5.1 --ignore-scripts
       - run: bun install --frozen-lockfile
       - run: bun run check:ci
-      - name: Verify npm credentials
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Reject classic npm authentication
         run: |
-          test -n "$NPM_TOKEN"
-          npm whoami --registry=https://registry.npmjs.org >/dev/null
+          test "$(npm --version)" = "11.5.1"
+          if [ -n "${NODE_AUTH_TOKEN:-}${NPM_TOKEN:-}" ]; then
+            echo "Classic npm tokens are not allowed; publishing uses OIDC trusted publishing."
+            exit 1
+          fi
       - name: Validate release tag
         env:
           RELEASE_TAG: ${{ github.ref_name }}
         run: test "$RELEASE_TAG" = "store-v$(node -p "require('./package.json').version")"
-      - name: Publish package
+      - name: Publish package with OIDC provenance
         env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_REGISTRY: https://registry.npmjs.org
         run: |
-          test -n "$NPM_TOKEN"
           PACKAGE_VERSION="$(node -p "require('./package.json').version")"
           LOOKUP_OUTPUT="$(mktemp)"
           if npm view "@aihu/store@$PACKAGE_VERSION" version --registry=https://registry.npmjs.org >"$LOOKUP_OUTPUT" 2>&1; then
